@@ -35,6 +35,7 @@
 #include "FileOperations/fileops.h"
 #include "utils/encrypt.h"
 #include "version.h"
+#include "SoundOperations/MusicPlayer.h"
 
 #define VALID_CONFIG_REV	1031
 
@@ -93,17 +94,17 @@ void CSettings::SetDefault()
 	ProxyAddress[0] = 0;
 	theme[0] = 0;
 	language_path[0] = 0;
-	ogg_path[0] = 0;
+	snprintf(ogg_path, sizeof(ogg_path), "%smusic/", ConfigPath);
 	unlockCode[0] = 0;
 	db_language[0] = 0;
-	returnTo[0] = 0;
+	strlcpy(returnTo, "THBF", sizeof(returnTo));
 
 	NTSC = (CONF_GetVideo() == CONF_VIDEO_NTSC);
 	PAL50 = (CONF_GetVideo() == CONF_VIDEO_PAL) && (CONF_GetEuRGB60() == 0);
 	widescreen = (CONF_GetAspectRatio() == CONF_ASPECT_16_9);
 
 	godmode = 1;
-	videomode = VIDEO_MODE_DISCDEFAULT;
+	videomode = VIDEO_MODE_SYSDEFAULT;
 	videopatch = OFF;
 	videoPatchDol = OFF;
 	patchFix480p = ON;
@@ -124,6 +125,7 @@ void CSettings::SetDefault()
 	parentalcontrol = PARENTAL_LVL_ADULT;
 	LayoutVersion = 2;
 	BootIOS = 58;
+	SDMode = ON;
 	LoaderIOS = 249;
 	cios = 249;
 	AutoIOS = GAME_IOS_AUTO;
@@ -142,7 +144,7 @@ void CSettings::SetDefault()
 	CacheCheckCRC = 0;
 	CacheTitles = ON;
 	screensaver = SCREENSAVER_10_MIN;
-	musicloopmode = ON;
+	musicloopmode = SHUFFLE_MUSIC;
 	marknewtitles = ON;
 	ShowFreeSpace = ON;
 	ShowGameCount = ON;
@@ -157,7 +159,7 @@ void CSettings::SetDefault()
 	BlockIOSReload = AUTO;
 	USBPort = 0;
 	WSFactor = 0.8f; //actually should be 0.75 for real widescreen
-	FontScaleFactor = 0.8f; //it's a work around to not have to change ALL fonts now
+	FontScaleFactor = 1.0f;
 	ClockFontScaleFactor = 1.0f; // Scale of 1 to prevent misaligned clock.
 	EnabledCategories.resize(1);
 	EnabledCategories[0] = 0;

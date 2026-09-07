@@ -18,11 +18,15 @@ private:
 	void TextFade(int direction);
 	void SetTextf(const char *format, ...);
 	void Draw();
+	void LoadSplash();
 	static int ParseArguments(int argc, char *argv[]);
 	static int QuickGameBoot(const char *gameID);
 	int AutobootDisc();
 
 	bool drawCancel;
+	u32 progressFrame;
+	GuiImageData *splashData;
+	GuiImage *splash;
 
 	GuiImageData *GXImageData;
 	GuiImage *background;

@@ -33,27 +33,32 @@ extern bool isWiiVC; // in sys.cpp
 
 StartUpProcess::StartUpProcess()
 {
+	splashData = NULL;
+	splash = NULL;
+	progressFrame = 0;
 	//! Load default font for the next text outputs
 	Theme::LoadFont("");
 
-	background = new GuiImage(screenwidth, screenheight, (GXColor){0, 0, 0, 255});
+	background = new GuiImage(screenwidth, screenheight, (GXColor){10, 17, 26, 255});
 
 	GXImageData = Resources::GetImageData("gxlogo.png");
 	GXImage = new GuiImage(GXImageData);
 	GXImage->SetAlignment(ALIGN_CENTER, ALIGN_MIDDLE);
 	GXImage->SetPosition(screenwidth / 2, screenheight / 2 - 50);
 
-	titleTxt = new GuiText("Loading...", 24, (GXColor){255, 255, 255, 255});
+	titleTxt = new GuiText("Starting your library", 32, (GXColor){255, 255, 255, 255});
 	titleTxt->SetAlignment(ALIGN_CENTER, ALIGN_MIDDLE);
 	titleTxt->SetPosition(screenwidth / 2, screenheight / 2 + 30);
 
-	messageTxt = new GuiText(" ", 22, (GXColor){255, 255, 255, 255});
+	messageTxt = new GuiText(" ", 28, (GXColor){255, 255, 255, 255});
+	messageTxt->SetMaxWidth(screenwidth - 80, WRAP);
 	messageTxt->SetAlignment(ALIGN_CENTER, ALIGN_MIDDLE);
 	messageTxt->SetPosition(screenwidth / 2, screenheight / 2 + 60);
 
-	versionTxt = new GuiText(" ", 18, (GXColor){255, 255, 255, 255});
+	versionTxt = new GuiText(" ", 28, (GXColor){190, 207, 222, 255});
+	versionTxt->SetMaxWidth(screenwidth - 64, DOTTED);
 	versionTxt->SetAlignment(ALIGN_LEFT, ALIGN_BOTTOM);
-	versionTxt->SetPosition(23, screenheight - 20);
+	versionTxt->SetPosition(32, screenheight - 32);
 
 // Please don't release unofficial builds w/o tagging them as such
 #if defined(FULLCHANNEL)
@@ -65,11 +70,11 @@ StartUpProcess::StartUpProcess()
 #endif
 
 	if (strncmp(Settings.ConfigPath, "sd", 2) == 0)
-		cancelTxt = new GuiText("Press B to cancel or A to enable SD card mode", 22, (GXColor){255, 255, 255, 255});
+		cancelTxt = new GuiText("B: Cancel    A: Use SD card", 28, (GXColor){255, 255, 255, 255});
 	else
-		cancelTxt = new GuiText("Press B to cancel", 22, (GXColor){255, 255, 255, 255});
+		cancelTxt = new GuiText("B: Cancel", 28, (GXColor){255, 255, 255, 255});
 	cancelTxt->SetAlignment(ALIGN_CENTER, ALIGN_MIDDLE);
-	cancelTxt->SetPosition(screenwidth / 2, screenheight / 2 + 90);
+	cancelTxt->SetPosition(screenwidth / 2, screenheight - 86);
 
 	trigB = new GuiTrigger;
 	trigB->SetButtonOnlyTrigger(-1, WPAD_BUTTON_B | WPAD_CLASSIC_BUTTON_B, PAD_BUTTON_B);
@@ -89,6 +94,8 @@ StartUpProcess::StartUpProcess()
 
 StartUpProcess::~StartUpProcess()
 {
+	delete splash;
+	delete splashData;
 	delete background;
 	delete GXImageData;
 	delete GXImage;
@@ -368,6 +375,7 @@ int StartUpProcess::Execute(bool quickGameBoot, bool isBadBoot)
 
 	SetTextf("Loading config files\n");
 	gprintf("\tLoading config...%s\n", Settings.Load() ? "done" : "failed");
+	LoadSplash();
 	gprintf("\tLoading language...%s\n", Settings.LoadLanguage(Settings.language_path, CONSOLE_DEFAULT) ? "done" : "failed");
 	gprintf("\tLoading game settings...%s\n", GameSettings.Load(Settings.ConfigPath) ? "done" : "failed");
 	gprintf("\tLoading game statistics...%s\n", GameStatistics.Load(Settings.ConfigPath) ? "done" : "failed");
@@ -532,10 +540,26 @@ int StartUpProcess::FinalizeExecute()
 	return 0;
 }
 
+void StartUpProcess::LoadSplash()
+{
+	std::string path(Settings.theme);
+	const size_t slash = path.find_last_of('/');
+	path = slash == std::string::npos ? Settings.ConfigPath : path.substr(0, slash + 1);
+	path += "startup.png";
+	splashData = new GuiImageData(path.c_str());
+	if (!splashData->GetImage() || splashData->GetWidth() != screenwidth || splashData->GetHeight() != screenheight)
+	{ delete splashData; splashData = NULL; return; }
+	splash = new GuiImage(splashData);
+}
+
 void StartUpProcess::Draw()
 {
 	background->Draw();
-	GXImage->Draw();
+	if (splash) splash->Draw();
+	else GXImage->Draw();
+	// A moving activity indicator, not a fabricated completion percentage.
+	Menu_DrawRectangle(screenwidth/2 - 140, screenheight - 120, 280, 6, (GXColor){39, 56, 73, 255}, 1);
+	Menu_DrawRectangle(screenwidth/2 - 140 + (progressFrame++ % 233), screenheight - 120, 48, 6, (GXColor){67, 197, 242, 255}, 1);
 	titleTxt->Draw();
 	messageTxt->Draw();
 	versionTxt->Draw();
