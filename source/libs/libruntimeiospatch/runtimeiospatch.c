@@ -111,11 +111,21 @@ static const u8 isfs_perm_wiivc_patch[] = { 0x42, 0x9F, 0x46, 0xC0, 0x20, 0x00, 
 
 static u8 apply_patch(const char *name, const u8 *old, u32 old_size, const u8 *patch, size_t patch_size, u32 patch_offset, bool verbose) {
 	u8 *ptr_start = (u8*)*((u32*)0x80003134), *ptr_end = (u8*)0x94000000;
+	/* Bound both the signature read and the offset patch write. Some
+	 * signatures are longer than their replacement; using patch_size as
+	 * the scan bound let memcmp cross the end of MEM2 when none matched. */
+	const u32 mem2_size = 0x04000000;
+	if (!old_size || old_size > mem2_size || patch_offset > mem2_size ||
+		patch_size > mem2_size - patch_offset ||
+		(u32)ptr_start < 0x90000000 || (u32)ptr_start >= 0x94000000)
+		return 0;
+	u32 required = patch_offset + patch_size;
+	if (required < old_size) required = old_size;
 	u8 found = 0;
 	if(verbose)
 		gprintf("    Patching %-30s", name);
 	u8 *location = NULL;
-	while (ptr_start < (ptr_end - patch_size)) {
+	while (ptr_start <= (ptr_end - required)) {
 		if (!memcmp(ptr_start, old, old_size)) {
 			found++;
 			location = ptr_start + patch_offset;
