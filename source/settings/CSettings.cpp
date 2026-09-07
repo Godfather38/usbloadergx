@@ -98,7 +98,8 @@ void CSettings::SetDefault()
 	snprintf(ogg_path, sizeof(ogg_path), "%smusic/", ConfigPath);
 	unlockCode[0] = 0;
 	db_language[0] = 0;
-	strlcpy(returnTo, "THBF", sizeof(returnTo));
+	// NandTitle::FindU32 parses hexadecimal text, not the four-letter title ID.
+	strlcpy(returnTo, "54484246", sizeof(returnTo));
 
 	NTSC = (CONF_GetVideo() == CONF_VIDEO_NTSC);
 	PAL50 = (CONF_GetVideo() == CONF_VIDEO_PAL) && (CONF_GetEuRGB60() == 0);
