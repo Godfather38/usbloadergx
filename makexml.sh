@@ -33,20 +33,20 @@ rev_date=`date -u +%Y%m%d%H%M%S`
 cat <<EOF > ./HBC/meta.xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <app version="1">
-	<name> USB Loader GX</name>
+	<name>MarshallsLoader</name>
 	<coder>blackb0x</coder>
-	<version>4.0 r$rev_new</version>
+	<version>Experimental r$rev_new</version>
 	<release_date>$rev_date</release_date>
 	<!-- to enable arguments change disabled_arguments to arguments -->
 	<disabled_arguments>
 		<arg>--ios=249</arg>
 		<arg>--bootios=58</arg>
 		<arg>--usbport=0</arg>
-		<arg>--sdmode=0</arg>
+		<arg>--sdmode=1</arg>
 	</disabled_arguments>
 	<ahb_access/>
-	<short_description>Load games from a USB or SD card</short_description>
-	<long_description>USB Loader GX allows you to install your games to a USB storage device or SD card. You can then boot your games faster, download and use cheats, or apply various patches.
+	<short_description>Experimental library and homebrew browser</short_description>
+	<long_description>MarshallsLoader is an experimental USB Loader GX derivative. It uses apps/marshallsloader for its own settings and caches, alongside the normal GX installation. Homebrew apps appear in the library. A separately supplied local theme loads automatically. Original USB Loader GX authors retain credit. This test build is not a replacement for your normal loader.
 
 Home:
 https://github.com/wiidev/usbloadergx

@@ -45,7 +45,7 @@ CSettings::CSettings()
 {
 	CONF_Init();
 	strcpy(BootDevice, "sd:");
-	snprintf(ConfigPath, sizeof(ConfigPath), "%s/apps/usbloader_gx/", BootDevice);
+	snprintf(ConfigPath, sizeof(ConfigPath), "%s/apps/" LOADER_APP_DIRECTORY "/", BootDevice);
 	this->SetDefault();
 	FirstTimeRun = true;
 }
@@ -72,7 +72,7 @@ void CSettings::SetDefault()
 	snprintf(WDMpath, sizeof(WDMpath), "%s/wdm/", BootDevice);
 	snprintf(WiinnertagPath, sizeof(WiinnertagPath), "%s", ConfigPath);
 	snprintf(theme_path, sizeof(theme_path), "%stheme/", ConfigPath);
-	snprintf(dolpath, sizeof(dolpath), "%s/", BootDevice);
+	snprintf(dolpath, sizeof(dolpath), "%s", ConfigPath);
 	snprintf(NandEmuPath, sizeof(NandEmuPath), "%s/nands/01/", BootDevice);
 	snprintf(DEVOLoaderPath, sizeof(DEVOLoaderPath), "%s/apps/gc_devo/", BootDevice);
 	snprintf(NINLoaderPath, sizeof(NINLoaderPath), "%s/apps/nintendont/", BootDevice);
@@ -92,7 +92,8 @@ void CSettings::SetDefault()
 	ProxyUsername[0] = 0;
 	ProxyPassword[0] = 0;
 	ProxyAddress[0] = 0;
-	theme[0] = 0;
+	// Optional private/local theme is supplied beside the app, never in CI.
+	snprintf(theme, sizeof(theme), "%stheme/bundled.them", ConfigPath);
 	language_path[0] = 0;
 	snprintf(ogg_path, sizeof(ogg_path), "%smusic/", ConfigPath);
 	unlockCode[0] = 0;
@@ -1581,16 +1582,16 @@ bool CSettings::FindConfig()
 	char CheckDevice[73];
 	for (int i = SD; i < MAXDEVICES; ++i)
 	{
-		// Check if the config file is in the usbloader_gx folder
+		// Never fall back to the normal GX installation.
 		snprintf(CheckDevice, sizeof(CheckDevice), "%s:", DeviceName[i]);
-		snprintf(CheckPath, sizeof(CheckPath), "%s/apps/usbloader_gx/GXGlobal.cfg", CheckDevice);
+		snprintf(CheckPath, sizeof(CheckPath), "%s/apps/" LOADER_APP_DIRECTORY "/GXGlobal.cfg", CheckDevice);
 
 		FILE *fp = fopen(CheckPath, "ab+");
 		if (fp)
 		{
 			fclose(fp);
 			strlcpy(BootDevice, CheckDevice, sizeof(BootDevice));
-			snprintf(ConfigPath, sizeof(ConfigPath), "%s/apps/usbloader_gx/", BootDevice);
+			snprintf(ConfigPath, sizeof(ConfigPath), "%s/apps/" LOADER_APP_DIRECTORY "/", BootDevice);
 			return true;
 		}
 	}

@@ -24,6 +24,9 @@
 #ifndef _CSETTINGS_H_
 #define _CSETTINGS_H_
 
+// Experimental side-by-side build: never reuse the installed GX config root.
+#define LOADER_APP_DIRECTORY "marshallsloader"
+
 #ifdef __cplusplus
 #include <string>
 #include <stdio.h>

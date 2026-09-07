@@ -46,7 +46,7 @@ StartUpProcess::StartUpProcess()
 	GXImage->SetAlignment(ALIGN_CENTER, ALIGN_MIDDLE);
 	GXImage->SetPosition(screenwidth / 2, screenheight / 2 - 50);
 
-	titleTxt = new GuiText("Starting your library", 32, (GXColor){255, 255, 255, 255});
+	titleTxt = new GuiText("MarshallsLoader", 32, (GXColor){255, 255, 255, 255});
 	titleTxt->SetAlignment(ALIGN_CENTER, ALIGN_MIDDLE);
 	titleTxt->SetPosition(screenwidth / 2, screenheight / 2 + 30);
 
@@ -282,6 +282,10 @@ int StartUpProcess::Run(int argc, char *argv[])
 	else if (launchPath.compare(0, 16, "/title/00000001/") == 0)
 		isBadBoot = true;
 
+	// Launchers may pass their own directory. Keep this experimental build's
+	// settings isolated even when launched from a different folder.
+	snprintf(Settings.ConfigPath, sizeof(Settings.ConfigPath),
+		"%s/apps/" LOADER_APP_DIRECTORY "/", Settings.BootDevice);
 	int quickGameBoot = ParseArguments(argv ? argc : 0, argv);
 
 	StartUpProcess Process;

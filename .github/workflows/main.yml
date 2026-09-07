@@ -41,10 +41,10 @@ jobs:
       - name: Package
         if: ${{ vars.ALLOW_UPLOADS == 'true' }}
         run: |
-          mkdir -p upload/apps/usbloader_gx
-          cp boot.dol upload/apps/usbloader_gx
-          cp HBC/icon.png upload/apps/usbloader_gx
-          cp HBC/meta.xml upload/apps/usbloader_gx
+          mkdir -p upload/apps/marshallsloader
+          cp boot.dol upload/apps/marshallsloader
+          cp HBC/icon.png upload/apps/marshallsloader
+          cp HBC/meta.xml upload/apps/marshallsloader
           echo "sha=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
 
       - name: Upload binary
