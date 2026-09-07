@@ -3,6 +3,7 @@
 #include "FileOperations/fileops.h"
 #include "settings/CSettings.h"
 #include "themes/CTheme.h"
+#include <string>
 
 /****************************************************************************
  * LoadCoverImage
@@ -47,6 +48,13 @@ GuiImageData *LoadCoverImage(struct discHdr *header, bool Prefere3D, bool noCove
 			break;
 	}
 	//Load no image
+	if (header->type == TYPE_GAME_HOMEBREW && (!Cover || !Cover->GetImage()))
+	{
+		std::string icon(header->path);
+		icon = icon.substr(0, icon.find_last_of('/') + 1) + "icon.png";
+		delete Cover;
+		Cover = new (std::nothrow) GuiImageData(icon.c_str());
+	}
 	if (noCover && (!Cover || !Cover->GetImage()))
 	{
 		flag = Prefere3D;

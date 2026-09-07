@@ -1,5 +1,6 @@
 #include <unistd.h>
 #include "GameBrowseMenu.hpp"
+#include "homebrewboot/HomebrewGames.h"
 #include "banner/BannerAsync.h"
 #include "Controls/DeviceHandler.hpp"
 #include "FileOperations/fileops.h"
@@ -766,6 +767,12 @@ void GameBrowseMenu::ReloadBrowser(bool firstRun)
 			homeBtn->SetImage(homeBtnImgCustom);
 			homeBtn->SetImageOver(homeBtnImgCustomOver);
 		}
+		else if (Settings.GameDisplayType == DISP_HOMEBREW)
+		{
+			homeBtnTT->SetText(tr("Displaying homebrew apps"));
+			homeBtn->SetImage(homeBtnImgCustom);
+			homeBtn->SetImageOver(homeBtnImgCustomOver);
+		}
 		listBtn->SetVisible(false);
 		gridBtn->SetVisible(false);
 		carouselBtn->SetVisible(false);
@@ -1193,6 +1200,8 @@ int GameBrowseMenu::MainLoop()
 			else if (Settings.GameDisplayType == DISP_NAND)
 				Settings.GameDisplayType = DISP_EMUNAND;
 			else if (Settings.GameDisplayType == DISP_EMUNAND)
+				Settings.GameDisplayType = DISP_HOMEBREW;
+			else if (Settings.GameDisplayType == DISP_HOMEBREW)
 			{
 				Settings.GameDisplayType = DISP_CUSTOM;
 				if (Settings.LoaderMode & MODE_WIIGAMES)
@@ -1644,7 +1653,8 @@ int GameBrowseMenu::MainLoop()
 		}
 
 		// Fixes EmuNAND being on line 3
-		int choice = ShowSelectGames(tr("Select Game Sources"), tr("Wii"), tr("NAND"), tr("EmuNAND"), tr("GameCube"), Settings.LoaderMode);
+		int choice = CheckboxPrompt::Show(tr("Select Game Sources"), 0,
+			tr("Wii"), tr("NAND"), tr("EmuNAND"), tr("GameCube"), tr("Homebrew"), 0, Settings.LoaderMode);
 		if (choice != CheckedNone && choice != Settings.LoaderMode)
 		{
 			Settings.LoaderMode = choice;
@@ -1813,7 +1823,7 @@ void GameBrowseMenu::UpdateGameInfoText(struct discHdr *header)
 		char reg[2];
 		snprintf(sys, sizeof(sys), "%c", IDfull[0]);
 		snprintf(reg, sizeof(reg), "%c", IDfull[3]);
-		if (header->type >= TYPE_GAME_NANDCHAN)
+		if (header->type == TYPE_GAME_NANDCHAN || header->type == TYPE_GAME_EMUNANDCHAN)
 		{
 			// Force some homebrew to display as region free
 			char regions[] = "ABDEFHIJKLMNPQRSTUVW";
@@ -1902,6 +1912,14 @@ void GameBrowseMenu::UpdateGameInfoText(struct discHdr *header)
 
 int GameBrowseMenu::OpenClickedGame(struct discHdr *header)
 {
+	if (header && header->type == TYPE_GAME_HOMEBREW)
+	{
+		int result = HomebrewGames::Launch(header);
+		WindowPrompt(tr("Could not open this app"),
+			result == -2 ? tr("The app is too large or there is not enough memory. Press A to return.") :
+			tr("Check that its boot file is still on the SD card. Press A to return."), tr("OK"));
+		return -1;
+	}
 	int choice = -1;
 	int oldFavLevel = 0;
 

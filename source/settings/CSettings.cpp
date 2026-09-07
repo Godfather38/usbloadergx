@@ -182,7 +182,7 @@ void CSettings::SetDefault()
 	bannerFavIcon = BANNER_FAVICON_SINGLE_LINEA;
 	RememberUnlock = ON;
 	GameDisplayType = DISP_CUSTOM; // Old style by default
-	LoaderMode = MODE_WIIGAMES | MODE_GCGAMES | MODE_NANDCHANNELS;
+	LoaderMode = MODE_WIIGAMES | MODE_GCGAMES | MODE_NANDCHANNELS | MODE_HOMEBREW;
 	SearchMode = SEARCH_BEGINNING;
 	GameAspectRatio = ASPECT_SYSTEM_DEFAULT;
 	ScreenMode = SCREEN_DEFAULT;

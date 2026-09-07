@@ -39,6 +39,7 @@
 #include "memory/memory.h"
 #include "Channels/channels.h"
 #include "cache/cache.hpp"
+#include "homebrewboot/HomebrewGames.h"
 
 enum
 {
@@ -406,6 +407,9 @@ void GameList::InternalGetGameListHeaders(std::vector<struct discHdr *> &tmplist
 
 int GameList::GetGameListHeaders(std::vector<struct discHdr *> &tmplist, short LoaderMode)
 {
+	if (LoaderMode & MODE_HOMEBREW)
+		InternalGetGameListHeaders(tmplist, HomebrewGames::Headers());
+
 	// Filter current game list if selected
 	if (LoaderMode & MODE_WIIGAMES)
 	{
