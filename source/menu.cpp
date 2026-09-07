@@ -186,7 +186,8 @@ int MainMenu(int menu)
 
 	background = Resources::GetImageData(Settings.widescreen ? "wbackground.png" : "background.png");
 
-	bgImg = new GuiImage(background);
+	bgImg = Settings.theme[0] ? new GuiImage(background) :
+		new GuiImage(screenwidth, screenheight, (GXColor){10, 17, 26, 255});
 	mainWindow->Append(bgImg);
 
 	MountGamePartition();

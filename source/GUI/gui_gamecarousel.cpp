@@ -100,7 +100,7 @@ GuiGameCarousel::GuiGameCarousel(int w, int h, const char *themePath, int offset
 	btnRight->SetTrigger(trigPlus);
 	btnRight->SetEffectGrow();
 
-	gamename = new GuiText(" ", 18, thColor("r=55 g=190 b=237 a=255 - carousel game name text color"));
+	gamename = new GuiText(" ", 28, thColor("r=55 g=190 b=237 a=255 - carousel game name text color"));
 	gamename->SetParent(this);
 	gamename->SetAlignment(ALIGN_CENTER, ALIGN_TOP);
 	gamename->SetPosition(0, 330);

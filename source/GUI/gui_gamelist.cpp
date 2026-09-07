@@ -70,12 +70,12 @@ GuiGameList::GuiGameList(int w, int h, int offset)
 
 	for (int i = 0; i < pagesize; ++i)
 	{
-		gameTxt[i] = new GuiText((char *) NULL, 20, thColor("r=0 g=0 b=0 a=255 - game browser list text color"));
+		gameTxt[i] = new GuiText((char *) NULL, 28, thColor("r=0 g=0 b=0 a=255 - game browser list text color"));
 		gameTxt[i]->SetAlignment(ALIGN_LEFT, ALIGN_MIDDLE);
 		gameTxt[i]->SetPosition(24, 0);
 		gameTxt[i]->SetMaxWidth(maxTextWidth, DOTTED);
 
-		gameTxtOver[i] = new GuiText((char *) NULL, 20, thColor("r=0 g=0 b=0 a=255 - game browser list text color over"));
+		gameTxtOver[i] = new GuiText((char *) NULL, 28, thColor("r=0 g=0 b=0 a=255 - game browser list text color over"));
 		gameTxtOver[i]->SetAlignment(ALIGN_LEFT, ALIGN_MIDDLE);
 		gameTxtOver[i]->SetPosition(24, 0);
 		gameTxtOver[i]->SetMaxWidth(maxTextWidth, SCROLL_HORIZONTAL);
