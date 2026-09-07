@@ -1,4 +1,5 @@
 #include <unistd.h>
+#include <string>
 #include "StartUpProcess.h"
 #include "GUI/gui.h"
 #include "video.h"
@@ -248,26 +249,33 @@ bool StartUpProcess::USBSpinUp()
 int StartUpProcess::Run(int argc, char *argv[])
 {
 	bool isBadBoot = false;
-	// A normal launch should always have the first arg be the path
-	char *ptr = strrchr(argv[0], '/');
-	if (ptr && (argv[0][2] == ':' || argv[0][3] == ':'))
+	// Direct DOL launches need not provide argv. Keep the default SD path
+	// in that case; never dereference missing arguments or alter caller memory.
+	const std::string launchPath = argc > 0 && argv && argv[0] ? argv[0] : "";
+	const size_t slash = launchPath.find_last_of('/');
+	const bool fromSD = launchPath.compare(0, 4, "sd:/") == 0;
+	const bool fromUSB = launchPath.compare(0, 5, "usb:/") == 0;
+	const bool fromUSB1 = launchPath.compare(0, 6, "usb1:/") == 0;
+	if (slash != std::string::npos && (fromSD || fromUSB || fromUSB1))
 	{
-		*ptr = 0;
 		// HBC doesn't specify the USB port
-		if (strncmp(argv[0], "usb", 3) == 0)
+		if (fromUSB)
 		{
 			snprintf(Settings.BootDevice, sizeof(Settings.BootDevice), "usb1:");
-			snprintf(Settings.ConfigPath, sizeof(Settings.ConfigPath), "usb1:%s/", argv[0] + 4);
+			snprintf(Settings.ConfigPath, sizeof(Settings.ConfigPath), "usb1:%s", launchPath.substr(4, slash - 3).c_str());
 		}
-		else if (strncmp(argv[0], "sd", 2) == 0)
-			snprintf(Settings.ConfigPath, sizeof(Settings.ConfigPath), "%s/", argv[0]);
+		else
+		{
+			if (fromUSB1) snprintf(Settings.BootDevice, sizeof(Settings.BootDevice), "usb1:");
+			snprintf(Settings.ConfigPath, sizeof(Settings.ConfigPath), "%s", launchPath.substr(0, slash + 1).c_str());
+		}
 		gprintf("Loader path: %s\n", Settings.ConfigPath);
 	}
 	// Priiloader breaks updates and passes outdated meta.xml info
-	else if (strncmp(argv[0], "/title/00000001/", 16) == 0)
+	else if (launchPath.compare(0, 16, "/title/00000001/") == 0)
 		isBadBoot = true;
 
-	int quickGameBoot = ParseArguments(argc, argv);
+	int quickGameBoot = ParseArguments(argv ? argc : 0, argv);
 
 	StartUpProcess Process;
 
