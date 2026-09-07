@@ -486,6 +486,25 @@ CustomBanner *OpeningBNR::CreateGCBanner(const discHdr *header)
 	return banner;
 }
 
+CustomBanner *OpeningBNR::CreateHomebrewIcon(const discHdr *header)
+{
+	CustomBanner *icon = new CustomBanner;
+	icon->LoadIcon(Resources::GetFile("custom_banner.bnr"), Resources::GetFileSize("custom_banner.bnr"));
+	std::string path(header->path);
+	path = path.substr(0, path.find_last_of('/') + 1) + "icon.png";
+	u8 *png = NULL;
+	u32 size = 0;
+	if (FileSize(path.c_str()) <= 1024 * 1024)
+		LoadFileToMem(path.c_str(), &png, &size);
+	if (png)
+	{
+		icon->SetIconPngImage("Iconpng.tpl", png, size);
+		icon->SetIconPngImage("HBLogo.tpl", png, size);
+		free(png);
+	}
+	return icon;
+}
+
 CustomBanner *OpeningBNR::CreateGCIcon(const discHdr *header)
 {
 	GC_OpeningBnr *openingBnr = (GC_OpeningBnr *)LoadGCBNR(header);

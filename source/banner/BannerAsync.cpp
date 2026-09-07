@@ -138,7 +138,12 @@ void * BannerAsync::BannerAsyncThread(void *arg)
 			const u8 * banner = NULL;
 			u32 bannerSize = 0;
 
-			if((InUse->header->type == TYPE_GAME_GC_IMG) || (InUse->header->type == TYPE_GAME_GC_DISC) || (InUse->header->type == TYPE_GAME_GC_EXTRACTED))
+			if (InUse->header->type == TYPE_GAME_HOMEBREW)
+			{
+				CustomBanner *appIcon = BNRInstance::Instance()->CreateHomebrewIcon(InUse->header);
+				if (appIcon) { InUse->swap(*appIcon); delete appIcon; }
+			}
+			else if((InUse->header->type == TYPE_GAME_GC_IMG) || (InUse->header->type == TYPE_GAME_GC_DISC) || (InUse->header->type == TYPE_GAME_GC_EXTRACTED))
 			{
 				//! first see if a cache file is present and load that if needed
 				if(BNRInstance::Instance()->Load(InUse->header))

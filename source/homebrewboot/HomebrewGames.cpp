@@ -60,6 +60,10 @@ std::vector<discHdr> &HomebrewGames::Headers()
     closedir(dir);
     std::sort(folders.begin(), folders.end());
     std::set<std::string> ids;
+    pugi::xml_document categories;
+    std::string categoryPath(Settings.ConfigPath);
+    if (!categoryPath.empty() && categoryPath[categoryPath.size()-1] != '/') categoryPath += '/';
+    categories.load_file((categoryPath + "homebrew_categories.xml").c_str());
     for (size_t i = 0; i < folders.size(); ++i)
     {
         const std::string folder = root + folders[i] + '/';
@@ -82,6 +86,10 @@ std::vector<discHdr> &HomebrewGames::Headers()
         // Optional app-local metadata, imported only when no user categories exist.
         const std::vector<unsigned> &existing = GameCategories[id.c_str()];
         if (existing.size() > 1 || (existing.size() == 1 && existing[0] != 0)) continue;
+        for (pugi::xml_node app = categories.child("homebrew").child("app"); app; app = app.next_sibling("app"))
+            if (folders[i] == app.attribute("folder").value())
+                for (pugi::xml_node category = app.child("category"); category; category = category.next_sibling("category"))
+                    addCategory(id, category.child_value());
         pugi::xml_document document;
         if (document.load_file((folder + "meta.xml").c_str()))
             for (pugi::xml_node category = document.child("app").child("category"); category; category = category.next_sibling("category"))

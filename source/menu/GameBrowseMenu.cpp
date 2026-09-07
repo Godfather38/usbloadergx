@@ -1823,6 +1823,7 @@ void GameBrowseMenu::UpdateGameInfoText(struct discHdr *header)
 		char reg[2];
 		snprintf(sys, sizeof(sys), "%c", IDfull[0]);
 		snprintf(reg, sizeof(reg), "%c", IDfull[3]);
+		if (header->type == TYPE_GAME_HOMEBREW) reg[0] = 'A';
 		if (header->type == TYPE_GAME_NANDCHAN || header->type == TYPE_GAME_EMUNANDCHAN)
 		{
 			// Force some homebrew to display as region free
